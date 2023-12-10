@@ -1,9 +1,9 @@
 # To start the app
-npm install
-npm start
+- npm install
+- npm start
 
 # URL
-localhost:3000
+- localhost:3000
 
 # Usage - Sample test data : Provide the below urls in the text box
 - kmz file : https://raw.githubusercontent.com/mshemeel/test-data-files/main/sample.kmz
