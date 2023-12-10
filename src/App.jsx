@@ -1,24 +1,24 @@
 import React, { useState,useEffect } from 'react';
 import axios from 'axios';
-import { MapContainer, TileLayer, GeoJSON, useMap,Marker, Popup, } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, useMap ,Marker, Popup} from 'react-leaflet';
 import toGeoJSON from 'togeojson'; 
 import 'leaflet/dist/leaflet.css';
 import JSZip from 'jszip';
+import L from 'leaflet';
 
 function App() {  
   const [url, setUrl] = useState('');
   const [data, setData] = useState(null);
-  const [isEmpty, setIsEmpty] = useState(true); // Track whether the input field is empty
-  const [markerPosition, setMarkerPosition] = useState(null);
-  //const [shpFileData, setShapeFileData] = useState(null);
-  const test = "https://raw.githubusercontent.com/mshemeel/test-data-files/main/layer.zip";
+  const [isEmpty, setIsEmpty] = useState(true); 
+
+
   const handleUrlChange = (e) => {
     const newUrl = e.target.value;
     setUrl(newUrl);
-    setIsEmpty(newUrl === ''); // Update isEmpty state based on the input field value
+    setIsEmpty(newUrl === ''); 
     if (newUrl === '') {
       setData(null);
-      setMarkerPosition(null);
+     
     } 
   };
 
@@ -28,16 +28,12 @@ function App() {
       if (url.toLowerCase().endsWith('.json')) {
         const response = await axios.get(url);
         setData(response.data);
-        const coordinates = response.data.features[0].geometry.coordinates;
-        setMarkerPosition([coordinates[1], coordinates[0]]);
       }  else if (url.toLowerCase().endsWith('.kml')) {
          const response = await axios.get(url);
          const kmlData = response.data;
          const domParser = new DOMParser();
          const kmlDocument = domParser.parseFromString(kmlData, 'application/xml'); 
          const geojsonData = toGeoJSON.kml(kmlDocument);
-         const coordinates = geojsonData.features[0].geometry.coordinates;
-        setMarkerPosition([coordinates[1], coordinates[0]]);
         setData(geojsonData);
       }  else if (url.toLowerCase().endsWith('.zip')) {
         const response = await axios.get(url, {
@@ -53,8 +49,6 @@ function App() {
         }); 
         console.log('POST response:', postResponse.data); 
         const geojsonData = postResponse.data;
-        const coordinates = geojsonData.features[0].geometry.coordinates;
-        setMarkerPosition([coordinates[1], coordinates[0]]);
         setData(geojsonData); 
       }else if (url.toLowerCase().endsWith('.kmz')) {
         const response = await axios.get(url, {
@@ -68,8 +62,6 @@ function App() {
           const domParser = new DOMParser();
           const kmlDocument = domParser.parseFromString(kmlText, 'application/xml'); 
           const geojsonData = toGeoJSON.kml(kmlDocument);
-          const coordinates = geojsonData.features[0].geometry.coordinates;
-          setMarkerPosition([coordinates[1], coordinates[0]]);
           setData(geojsonData);
         }
 
@@ -83,7 +75,6 @@ function App() {
 
   const handleMapClick = (e) => {
     console.log('Clicked on map at:', e.latlng);
-    setMarkerPosition([e.latlng.lat, e.latlng.lng]);
   };
 
   const GeoJSONComponent = ({ data }) => {
@@ -93,15 +84,24 @@ function App() {
       if (map && isEmpty) {
         map.setView([50, 50], 3);
       }else if (map && data) {
-        const coordinates = data.features[0].geometry.coordinates;
-        map.setView([coordinates[1], coordinates[0]]);
-        map.setZoom(15);
-      }else if (map && markerPosition) {
-        map.setView(markerPosition, 15);
-      } 
-    }, [map, data]);
+        const geojsonObject = L.geoJSON(data);
+        map.fitBounds(geojsonObject.getBounds());
+        map.setZoom(12);
+        console.log(geojsonObject)
+      }
+      // This is for fixing the icon image
+      delete L.Icon.Default.prototype._getIconUrl;
   
-    return <GeoJSON data={data} />;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+        iconUrl: require("leaflet/dist/images/marker-icon.png"),
+        shadowUrl: require("leaflet/dist/images/marker-shadow.png")
+      });
+
+    }, [map, data]);
+
+
+    return <GeoJSON data={data}/>;
   };
 
   return ( 
@@ -125,12 +125,6 @@ function App() {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
        {<GeoJSONComponent data={data} />}
-       {markerPosition && (
-          <Marker position={markerPosition}>
-            <Popup>Your custom marker</Popup>
-          </Marker>
-        )}
-    
       </MapContainer>
     </div>
   ); 

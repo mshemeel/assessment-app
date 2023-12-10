@@ -9,3 +9,4 @@ localhost:3000
 - kmz file : https://raw.githubusercontent.com/mshemeel/test-data-files/main/sample.kmz
 - kml file : https://raw.githubusercontent.com/aviklai/react-leaflet-kml/master/src/assets/example1.kml
 - shape file : https://raw.githubusercontent.com/mshemeel/test-data-files/main/layer.zip
+- shape file : https://raw.githubusercontent.com/mshemeel/test-data-files/main/TM_WORLD_BORDERS_SIMPL-0.3.zip
