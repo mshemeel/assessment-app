@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import axios from 'axios';
-import { MapContainer, TileLayer, GeoJSON, useMap ,Marker, Popup} from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, useMap} from 'react-leaflet';
 import toGeoJSON from 'togeojson'; 
 import 'leaflet/dist/leaflet.css';
 import JSZip from 'jszip';
@@ -86,7 +86,7 @@ function App() {
       }else if (map && data) {
         const geojsonObject = L.geoJSON(data);
         map.fitBounds(geojsonObject.getBounds());
-        map.setZoom(12);
+        map.setZoom(8);
         console.log(geojsonObject)
       }
       // This is for fixing the icon image
