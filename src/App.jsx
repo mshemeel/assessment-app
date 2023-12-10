@@ -106,10 +106,10 @@ function App() {
 
   return ( 
     <div>
-      <h1>GeoJSON/KML Mapper</h1>
+      <h1>GeoJSON/KML/KMZ/Shape Mapper</h1>
       <div>
         <label>
-          Enter GeoJSON/KML URL:
+          Enter GeoJSON/KML/KMZ/Shape URL:
           <input type="text" value={url} onChange={handleUrlChange} />
         </label>
         <button onClick={fetchData}>Load Data</button>
